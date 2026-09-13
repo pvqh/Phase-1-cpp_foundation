@@ -1,0 +1,48 @@
+# Based on the Microsoft style, because that is what Visual Studio's own
+# formatter does by default and matching it means format-on-save agrees with
+# the command line.
+#
+# Every value below is a choice, not a default. If one annoys you, change it --
+# but change it once, reformat in its own commit, and never argue about it
+# again. That is the entire point of a formatter: it ends the conversation.
+---
+Language:        Cpp
+BasedOnStyle:    Microsoft
+
+Standard:        c++20
+ColumnLimit:     100
+IndentWidth:     4
+TabWidth:        4
+UseTab:          Never
+
+# Braces on their own line. This is the Microsoft/Unreal convention and you are
+# heading for Unreal in Phase 4, so build the habit now.
+BreakBeforeBraces: Allman
+
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+EmptyLineBeforeAccessModifier: LogicalBlock
+FixNamespaceComments: true
+IndentPPDirectives: BeforeHash
+NamespaceIndentation: None
+PointerAlignment: Left
+ReferenceAlignment: Left
+SeparateDefinitionBlocks: Always
+SpaceAfterTemplateKeyword: false
+
+# Group and sort includes: your own headers first, then the standard library.
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:    '^"pv/'
+    Priority: 1
+  - Regex:    '^<catch2/'
+    Priority: 3
+  - Regex:    '^<'
+    Priority: 2

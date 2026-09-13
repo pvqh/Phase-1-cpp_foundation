@@ -1,0 +1,48 @@
+# Build output
+build/
+out/
+bin/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+_deps/
+
+# Visual Studio
+.vs/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.user
+*.suo
+*.ipch
+*.db
+*.opendb
+Browse.VC.db
+
+# Compiler / linker artefacts
+*.obj
+*.o
+*.lib
+*.a
+*.dll
+*.so
+*.exe
+*.pdb
+*.ilk
+*.idb
+*.exp
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
