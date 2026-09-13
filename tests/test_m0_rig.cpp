@@ -46,26 +46,4 @@ TEST_CASE("sections give each branch a clean slate", "[m0]")
     }
 }
 
-// ---------------------------------------------------------------------------
-// M0 EXERCISE -- do this before starting M1.
-//
-// 1. Build and run. Everything above should pass.
-//
-// 2. Break it deliberately: change `REQUIRE(1 + 1 == 2)` to `== 3`, rebuild,
-//    and run. Read the failure output carefully -- Catch2 prints the actual
-//    values on both sides of the operator without you telling it to. Work out
-//    how a macro could possibly know that. (Search: "Catch2 expression
-//    decomposition".) Then change it back.
-//
-// 3. Add a THIRD section to the second test case that also starts from
-//    value == 10, and make it assert something different. Confirm it passes.
-//
-// 4. Run the suite four ways and note what each gives you:
-//        ctest --test-dir build
-//        ctest --test-dir build --output-on-failure
-//        ctest --test-dir build -R sections
-//        .\build\bin\Debug\tests.exe "[m0]" --success
-//
-// 5. Delete this comment block when you have done all five. That is your
-//    commit: "test(m0): prove the rig works".
-// ---------------------------------------------------------------------------
+
