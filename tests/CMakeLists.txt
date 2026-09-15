@@ -30,7 +30,7 @@ FetchContent_MakeAvailable(Catch2)
 # ---------------------------------------------------------------------------
 add_executable(tests
     test_m0_rig.cpp
-    # test_m1_vec3.cpp
+    test_m1_vec3.cpp
     # test_m2_uniqueptr.cpp
     # test_m3_vector.cpp
     # test_m4_sharedptr.cpp
