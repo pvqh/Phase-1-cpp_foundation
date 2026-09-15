@@ -1,6 +1,7 @@
 #include "pv/Vec3.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include <stdexcept>
 
 TEST_CASE("Vec3 can be made at compile time", "[Vec3]") {
     constexpr pv::Vec3 v(1.0f, 2.0f, 3.0f);
@@ -97,25 +98,53 @@ TEST_CASE("Vec3 normalization", "[Vec3]") {
 }
 
 TEST_CASE("Vec3 normalization of zero vector", "[Vec3]") {
-    constexpr pv::Vec3 normalized = []{
-        pv::Vec3 zero_vector(0.0f, 0.0f, 0.0f);
-        return zero_vector.normalized();
-    }();
-    
-    STATIC_REQUIRE(normalized.x == 0.0f);
-    STATIC_REQUIRE(normalized.y == 0.0f);
-    STATIC_REQUIRE(normalized.z == 0.0f);
+    pv::Vec3 zero_vector(0.0f, 0.0f, 0.0f);
+    pv::Vec3 normalized = zero_vector.normalized();
+
+    REQUIRE(normalized.x == 0.0f);
+    REQUIRE(normalized.y == 0.0f);
+    REQUIRE(normalized.z == 0.0f);
 }
 
 TEST_CASE("Vec3 operator[]", "[Vec3]") {
-    constexpr pv::Vec3 a(1.0f, 2.0f, 3.0f);
+    SECTION("Read at compile time (const overload)") {
+        constexpr pv::Vec3 v(1.0f, 2.0f, 3.0f);
+        STATIC_REQUIRE(v[0] == 1.0f);
+        STATIC_REQUIRE(v[1] == 2.0f);
+        STATIC_REQUIRE(v[2] == 3.0f);
+    }
 
-    STATIC_REQUIRE(a[0] == 1.0f);
-    STATIC_REQUIRE(a[1] == 2.0f);
-    STATIC_REQUIRE(a[2] == 3.0f);
+    SECTION("Write at compile time (non-const overload)") {
+        constexpr pv::Vec3 v = [] {
+            pv::Vec3 t(0.0f, 0.0f, 0.0f);
+            t[0] = 1.0f;
+            t[1] = 2.0f;
+            t[2] = 3.0f;
+            return t;
+        }();
+        STATIC_REQUIRE(v.x == 1.0f);
+        STATIC_REQUIRE(v.y == 2.0f);
+        STATIC_REQUIRE(v.z == 3.0f);
+    }
 
-    // Test out of range access
-    REQUIRE_THROWS_AS(a[3], std::out_of_range);
+    SECTION("Read and write at runtime") {
+        pv::Vec3 v(1.0f, 2.0f, 3.0f);
+        REQUIRE(v[0] == 1.0f);
+        REQUIRE(v[1] == 2.0f);
+        REQUIRE(v[2] == 3.0f);
+
+        v[1] = 10.0f;
+        REQUIRE(v.y == 10.0f);   // writing through [] changed the real member
+    }
+
+    SECTION("Out of range throws") {
+        pv::Vec3 v(1.0f, 2.0f, 3.0f);
+        const pv::Vec3 cv(1.0f, 2.0f, 3.0f);
+
+        REQUIRE_NOTHROW(v[2]);                           // last valid index is fine
+        REQUIRE_THROWS_AS(v[3], std::out_of_range);      // non-const overload
+        REQUIRE_THROWS_AS(cv[3], std::out_of_range);     // const overload
+    }
 }
 
 TEST_CASE("Vec3 lengthSquared", "[Vec3]") {

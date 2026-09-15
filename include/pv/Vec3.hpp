@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <cstddef>
 #include <stdexcept>
 namespace pv{
     struct Vec3 {
@@ -57,7 +58,7 @@ namespace pv{
             return (x*x + y*y + z*z);
         }
 
-        constexpr Vec3 normalized() const {
+        Vec3 normalized() const {
             float length = this->length();
             if (length == 0.0f){
                 return Vec3(0.0f, 0.0f, 0.0f);
@@ -65,7 +66,18 @@ namespace pv{
             return Vec3(x/length, y/length, z/length);
         }
 
-        constexpr float operator[](std::size_t index){
+        // Non-const: returns a reference so v[0] = 5.0f writes to x
+        constexpr float& operator[](std::size_t index){
+            switch (index) {
+                case 0: return x;
+                case 1: return y;
+                case 2: return z;
+                default: throw std::out_of_range("Index out of range for Vec3");
+            }
+        }
+
+        // Const: read-only access for const / constexpr vectors
+        constexpr float operator[](std::size_t index) const {
             switch (index) {
                 case 0: return x;
                 case 1: return y;
