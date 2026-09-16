@@ -8,7 +8,9 @@ namespace pv{
         float y;
         float z;
 
-        constexpr explicit Vec3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
+        Vec3() : x(0.0f), y(0.0f), z(0.0f) {}
+
+        constexpr Vec3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
     
         constexpr Vec3& operator+=(const Vec3& other) {
             x += other.x;
@@ -31,6 +33,13 @@ namespace pv{
             return *this;
         }
 
+        constexpr Vec3& operator*=(const float& scalar) {
+            x *= scalar;
+            y *= scalar;
+            z *= scalar;
+            return *this;
+        }
+        
         constexpr Vec3& operator/=(const Vec3& other) {
             x /= other.x;
             y /= other.y;
@@ -38,23 +47,26 @@ namespace pv{
             return *this;
         }
 
+        constexpr Vec3& operator/=(const float& scalar) {
+            x /= scalar;
+            y /= scalar;
+            z /= scalar;
+            return *this;
+        }
+
         constexpr bool operator==(const Vec3& other) const {
             return (x == other.x && y == other.y && z == other.z);
         }
-        
+
         constexpr bool operator!=(const Vec3& other) const {
             return !(*this == other);
-        } 
-
-        constexpr Vec3  scale(float scalar) const {
-            return Vec3(x * scalar, y * scalar, z * scalar);
         }
 
         float length() const {
             return std::sqrt(lengthSquared());
         }
 
-        float lengthSquared() const {
+        constexpr float lengthSquared() const {
             return (x*x + y*y + z*z);
         }
 
@@ -102,8 +114,23 @@ namespace pv{
         return a;
     }
 
+    constexpr Vec3 operator*(Vec3 a, const float& scalar) {
+        a *= scalar;
+        return a;
+    }
+
+    constexpr Vec3 operator*(const float& scalar, Vec3 a) {
+        a *= scalar;
+        return a;
+    }
+    
     constexpr Vec3 operator/(Vec3 a, Vec3 b) {
         a /= b;
+        return a;
+    }
+
+    constexpr Vec3 operator/(Vec3 a, const float& scalar) {
+        a /= scalar;
         return a;
     }
 

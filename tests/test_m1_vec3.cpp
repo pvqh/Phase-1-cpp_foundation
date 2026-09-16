@@ -2,12 +2,44 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <stdexcept>
-
+#include <cstdlib>
+#include <array>
 TEST_CASE("Vec3 can be made at compile time", "[Vec3]") {
-    constexpr pv::Vec3 v(1.0f, 2.0f, 3.0f);
-    STATIC_REQUIRE(v.x == 1.0f);    // 
-    STATIC_REQUIRE(v.y == 2.0f);
-    STATIC_REQUIRE(v.z == 3.0f);
+    pv::Vec3 v(1.0f, 2.0f, 3.0f);
+    REQUIRE(v.x == 1.0f);    // 
+    REQUIRE(v.y == 2.0f);
+    REQUIRE(v.z == 3.0f);
+    REQUIRE(sizeof(v) == 12);    // 3 floats, 4 bytes each
+}
+
+TEST_CASE("Vec3 default constructor", "[Vec3]") {   
+    SECTION("Default constructor initializes with zero values") {
+        pv::Vec3 v;
+        REQUIRE(v.x == 0.0f);
+        REQUIRE(v.y == 0.0f);
+        REQUIRE(v.z == 0.0f);
+    }
+
+    SECTION("Default constructor initializes with array") {
+        std::array<pv::Vec3, 4> arr;
+        REQUIRE(arr[0].x == 0.0f);
+        REQUIRE(arr[0].y == 0.0f);
+        REQUIRE(arr[0].z == 0.0f);
+        
+        REQUIRE(arr[1].x == 0.0f);
+        REQUIRE(arr[1].y == 0.0f);
+        REQUIRE(arr[1].z == 0.0f);
+        
+        REQUIRE(arr[2].x == 0.0f);
+        REQUIRE(arr[2].y == 0.0f);
+        REQUIRE(arr[2].z == 0.0f);
+        
+        REQUIRE(arr[3].x == 0.0f);
+        REQUIRE(arr[3].y == 0.0f);
+        REQUIRE(arr[3].z == 0.0f);
+        
+        REQUIRE(sizeof(arr) == 48);    
+    }
 }
 
 TEST_CASE("Vec3 addition, subtraction, multiplication, division", "[Vec3]"){
@@ -75,17 +107,41 @@ TEST_CASE("Vec3 length", "[Vec3]") {
 }
 
 TEST_CASE("Vec3 scaling", "[Vec3]") {
-    constexpr pv::Vec3 a(1.0f, 2.0f, 3.0f);
-    float scalar = 2.0f;
-    pv::Vec3 scaled = a.scale(scalar);
+    SECTION("Vec3 v * 2.0f"){
+        constexpr pv::Vec3 scaled = []() {
+            pv::Vec3 v(1.0f, 2.0f, 3.0f);
+            float scalar = 2.0f;
+            return v * scalar;
+        }();
 
-    STATIC_REQUIRE(a.x == 1.0f);
-    STATIC_REQUIRE(a.y == 2.0f);
-    STATIC_REQUIRE(a.z == 3.0f);
-    
-    REQUIRE(scaled.x == 2.0f);
-    REQUIRE(scaled.y == 4.0f);
-    REQUIRE(scaled.z == 6.0f);
+        STATIC_REQUIRE(scaled.x == 2.0f);
+        STATIC_REQUIRE(scaled.y == 4.0f);
+        STATIC_REQUIRE(scaled.z == 6.0f);
+    }
+
+    SECTION("Vec3 2.0f * v"){
+        constexpr pv::Vec3 scaled = []() {
+            pv::Vec3 v(1.0f, 2.0f, 3.0f);
+            float scalar = 2.0f;
+            return scalar * v;
+        }();
+        
+        STATIC_REQUIRE(scaled.x == 2.0f);
+        STATIC_REQUIRE(scaled.y == 4.0f);
+        STATIC_REQUIRE(scaled.z == 6.0f);
+    }
+
+    SECTION("Vec3 v / 2.0f"){
+        constexpr pv::Vec3 scaled = []() {
+            pv::Vec3 v(2.0f, 4.0f, 6.0f);
+            float scalar = 2.0f;
+            return v / scalar;
+        }();
+
+        STATIC_REQUIRE(scaled.x == 1.0f);
+        STATIC_REQUIRE(scaled.y == 2.0f);
+        STATIC_REQUIRE(scaled.z == 3.0f);
+    }
 }
 
 TEST_CASE("Vec3 normalization", "[Vec3]") {
@@ -148,21 +204,59 @@ TEST_CASE("Vec3 operator[]", "[Vec3]") {
 }
 
 TEST_CASE("Vec3 lengthSquared", "[Vec3]") {
-    pv::Vec3 a(3.0f, 4.0f, 5.0f);
-    float length_squared = a.lengthSquared();
-    REQUIRE(length_squared == 50.0f); // 3^2 + 4^2 + 5^2 = 9 + 16 + 25 = 50
+    constexpr pv::Vec3 a(3.0f, 4.0f, 5.0f);
+    constexpr float length_squared = a.lengthSquared();
+    STATIC_REQUIRE(length_squared == 50.0f);
 }
 
 TEST_CASE("Vec3 equality and inequality operators", "[Vec3]") {
-    pv::Vec3 a(1.0f, 2.0f, 3.0f);
-    pv::Vec3 b(1.0f, 2.0f, 3.0f);
-    pv::Vec3 c(4.0f, 5.0f, 6.0f);
+    const pv::Vec3 a(1.0f, 2.0f, 3.0f);
+    const pv::Vec3 same(1.0f, 2.0f, 3.0f);
+    // Each differs from a in exactly one component, so == has to check all three
+    const pv::Vec3 diff_x(9.0f, 2.0f, 3.0f);
+    const pv::Vec3 diff_y(1.0f, 9.0f, 3.0f);
+    const pv::Vec3 diff_z(1.0f, 2.0f, 9.0f);
 
-    SECTION("Equality operator") {
-        REQUIRE(a == b); // a and b are equal
+    SECTION("Equal vectors") {
+        REQUIRE(a == same);
+        REQUIRE(same == a);
+        REQUIRE_FALSE(a != same);
     }
-    SECTION("Inequality operator") {
-        REQUIRE(a != c); // a and c are not equal
+
+    SECTION("Differ in x only") {
+        REQUIRE_FALSE(a == diff_x);
+        REQUIRE_FALSE(diff_x == a);
+        REQUIRE(a != diff_x);
+        REQUIRE(diff_x != a);
+    }
+
+    SECTION("Differ in y only") {
+        REQUIRE_FALSE(a == diff_y);
+        REQUIRE_FALSE(diff_y == a);
+        REQUIRE(a != diff_y);
+        REQUIRE(diff_y != a);
+    }
+
+    SECTION("Differ in z only") {
+        REQUIRE_FALSE(a == diff_z);
+        REQUIRE_FALSE(diff_z == a);
+        REQUIRE(a != diff_z);
+        REQUIRE(diff_z != a);
+    }
+
+    SECTION("Same components in a different order are not equal") {
+        const pv::Vec3 permuted(3.0f, 2.0f, 1.0f);
+        REQUIRE_FALSE(a == permuted);
+        REQUIRE(a != permuted);
+    }
+
+    SECTION("Usable at compile time") {
+        constexpr pv::Vec3 ca(1.0f, 2.0f, 3.0f);
+        constexpr pv::Vec3 cz(1.0f, 2.0f, 4.0f);
+        STATIC_REQUIRE(ca == ca);
+        STATIC_REQUIRE_FALSE(ca == cz);
+        STATIC_REQUIRE(ca != cz);
+        STATIC_REQUIRE_FALSE(ca != ca);
     }
 }
 
