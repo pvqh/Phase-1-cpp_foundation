@@ -4,12 +4,12 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <array>
+#include <type_traits>
 TEST_CASE("Vec3 can be made at compile time", "[Vec3]") {
     pv::Vec3 v(1.0f, 2.0f, 3.0f);
     REQUIRE(v.x == 1.0f);    // 
     REQUIRE(v.y == 2.0f);
     REQUIRE(v.z == 3.0f);
-    REQUIRE(sizeof(v) == 12);    // 3 floats, 4 bytes each
 }
 
 TEST_CASE("Vec3 default constructor", "[Vec3]") {   
@@ -37,8 +37,7 @@ TEST_CASE("Vec3 default constructor", "[Vec3]") {
         REQUIRE(arr[3].x == 0.0f);
         REQUIRE(arr[3].y == 0.0f);
         REQUIRE(arr[3].z == 0.0f);
-        
-        REQUIRE(sizeof(arr) == 48);    
+  
     }
 }
 
@@ -319,5 +318,44 @@ TEST_CASE("Vec3 += and -= operators at compile time", "[Vec3]") {
         STATIC_REQUIRE(a.x == -3.0f);
         STATIC_REQUIRE(a.y == -3.0f);
         STATIC_REQUIRE(a.z == -3.0f);
+    }
+}
+
+TEST_CASE("Vec3 is trivially copyable and tightly packed", "[Vec3]") {
+    SECTION("Trivially copyable") {
+        // Trivially copyable means the compiler is allowed to move a Vec3 around
+        // with a raw byte copy. That is what lets an array of them be memcpy'd
+        // straight into a GPU buffer or a file, with no per-element work.
+        STATIC_REQUIRE(std::is_trivially_copyable_v<pv::Vec3>);
+        STATIC_REQUIRE(std::is_trivially_copy_constructible_v<pv::Vec3>);
+        STATIC_REQUIRE(std::is_trivially_copy_assignable_v<pv::Vec3>);
+        STATIC_REQUIRE(std::is_trivially_move_constructible_v<pv::Vec3>);
+        STATIC_REQUIRE(std::is_trivially_move_assignable_v<pv::Vec3>);
+        STATIC_REQUIRE(std::is_trivially_destructible_v<pv::Vec3>);
+
+        // Standard layout too, so the members are laid out in declaration order
+        // and the address of a Vec3 is the address of its x.
+        STATIC_REQUIRE(std::is_standard_layout_v<pv::Vec3>);
+    }
+
+    SECTION("The hand-written default constructor is the one thing that is not trivial") {
+        // Vec3() zeroes the members, so default construction has to run code.
+        // That costs is_trivial_v, which is (trivially copyable AND trivially
+        // default constructible) -- but it does NOT cost trivial copyability.
+        // Zero-initialised by default is worth that trade; see the std::array
+        // test above, which relies on it.
+        STATIC_REQUIRE_FALSE(std::is_trivially_default_constructible_v<pv::Vec3>);
+        STATIC_REQUIRE_FALSE(std::is_trivial_v<pv::Vec3>);
+    }
+
+    SECTION("No padding") {
+        // 12, not 16: three floats with nothing wasted between or after them.
+        STATIC_REQUIRE(sizeof(pv::Vec3) == 3 * sizeof(float));
+        STATIC_REQUIRE(sizeof(pv::Vec3) == 12);
+        STATIC_REQUIRE(alignof(pv::Vec3) == alignof(float));
+
+        // An array is therefore a flat run of floats, with no gaps at the seams.
+        STATIC_REQUIRE(sizeof(std::array<pv::Vec3, 4>) == 12 * sizeof(float));
+        STATIC_REQUIRE(sizeof(pv::Vec3[8]) == 8 * sizeof(pv::Vec3));
     }
 }
