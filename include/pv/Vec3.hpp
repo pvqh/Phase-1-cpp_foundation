@@ -54,23 +54,23 @@ namespace pv{
             return *this;
         }
 
-        constexpr bool operator==(const Vec3& other) const {
+        [[nodiscard]] constexpr bool operator==(const Vec3& other) const {
             return (x == other.x && y == other.y && z == other.z);
         }
 
-        constexpr bool operator!=(const Vec3& other) const {
+        [[nodiscard]] constexpr bool operator!=(const Vec3& other) const {
             return !(*this == other);
         }
 
-        float length() const {
+        [[nodiscard]] float length() const {
             return std::sqrt(lengthSquared());
         }
 
-        constexpr float lengthSquared() const {
+        [[nodiscard]] constexpr float lengthSquared() const {
             return (x*x + y*y + z*z);
         }
 
-        Vec3 normalized() const {
+        [[nosdiscard]] Vec3 normalized() const {
             float length = this->length();
             if (length == 0.0f){
                 return Vec3(0.0f, 0.0f, 0.0f);
@@ -79,7 +79,7 @@ namespace pv{
         }
 
         // Non-const: returns a reference so v[0] = 5.0f writes to x
-        constexpr float& operator[](std::size_t index){
+        [[nodiscard]] constexpr float& operator[](std::size_t index){
             switch (index) {
                 case 0: return x;
                 case 1: return y;
@@ -89,7 +89,7 @@ namespace pv{
         }
 
         // Const: read-only access for const / constexpr vectors
-        constexpr float operator[](std::size_t index) const {
+        [[nodiscard]] constexpr float operator[](std::size_t index) const {
             switch (index) {
                 case 0: return x;
                 case 1: return y;
@@ -99,46 +99,46 @@ namespace pv{
         }
     };
 
-    constexpr Vec3 operator+(Vec3 a, Vec3 b) {
+    [[nodiscard]] constexpr Vec3 operator+(Vec3 a, Vec3 b) {
         a += b;
         return a;
     }
 
-    constexpr Vec3 operator-(Vec3 a, Vec3 b) {
+    [[nodiscard]] constexpr Vec3 operator-(Vec3 a, Vec3 b) {
         a -= b;
         return a;
     }
     
-    constexpr Vec3 operator*(Vec3 a, Vec3 b) {
+    [[nodiscard]] constexpr Vec3 operator*(Vec3 a, Vec3 b) {
         a *= b;
         return a;
     }
 
-    constexpr Vec3 operator*(Vec3 a, const float& scalar) {
+    [[nodiscard]] constexpr Vec3 operator*(Vec3 a, const float& scalar) {
         a *= scalar;
         return a;
     }
 
-    constexpr Vec3 operator*(const float& scalar, Vec3 a) {
+    [[nodiscard]] constexpr Vec3 operator*(const float& scalar, Vec3 a) {
         a *= scalar;
         return a;
     }
     
-    constexpr Vec3 operator/(Vec3 a, Vec3 b) {
+    [[nodiscard]] constexpr Vec3 operator/(Vec3 a, Vec3 b) {
         a /= b;
         return a;
     }
 
-    constexpr Vec3 operator/(Vec3 a, const float& scalar) {
+    [[nodiscard]] constexpr Vec3 operator/(Vec3 a, const float& scalar) {
         a /= scalar;
         return a;
     }
 
-    constexpr float dot(const Vec3& a, const Vec3& b) {
+    [[nosdiscard]] constexpr float dot(const Vec3& a, const Vec3& b) {
         return (a.x*b.x + a.y*b.y + a.z*b.z);
     }
 
-    constexpr Vec3 cross(const Vec3& a, const Vec3& b) {
+    [[nodiscard]] constexpr Vec3 cross(const Vec3& a, const Vec3& b) {
         return Vec3(
             a.y * b.z - a.z * b.y,
             a.z * b.x - a.x * b.z,
