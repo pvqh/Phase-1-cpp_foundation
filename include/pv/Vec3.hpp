@@ -8,7 +8,7 @@ namespace pv{
         float y;
         float z;
 
-        Vec3() : x(0.0f), y(0.0f), z(0.0f) {}
+        constexpr Vec3() : x(0.0f), y(0.0f), z(0.0f) {}
 
         constexpr Vec3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
     
