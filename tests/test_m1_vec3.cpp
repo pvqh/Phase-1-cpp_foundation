@@ -321,6 +321,68 @@ TEST_CASE("Vec3 += and -= operators at compile time", "[Vec3]") {
     }
 }
 
+TEST_CASE("Vec3 *= and /= operators at runtime", "[Vec3]") {
+    pv::Vec3 a(1.0f, 2.0f, 3.0f);
+    const pv::Vec3 b(4.0f, 5.0f, 6.0f);
+
+    REQUIRE(a.x == 1.0f);
+    REQUIRE(a.y == 2.0f);
+    REQUIRE(a.z == 3.0f);
+    REQUIRE(b.x == 4.0f);
+    REQUIRE(b.y == 5.0f);
+    REQUIRE(b.z == 6.0f);
+
+    SECTION("Operator *="){
+        a *= b;
+
+        REQUIRE(a.x == 4.0f);
+        REQUIRE(a.y == 10.0f);
+        REQUIRE(a.z == 18.0f);
+        REQUIRE(b.x == 4.0f);    
+        REQUIRE(b.y == 5.0f);
+        REQUIRE(b.z == 6.0f);
+    }
+
+    SECTION("Operator /="){
+        a /= b;
+        REQUIRE(a.x == 0.25f);
+        REQUIRE(a.y == 0.4f);
+        REQUIRE(a.z == 0.5f);
+        REQUIRE(b.x == 4.0f);
+        REQUIRE(b.y == 5.0f);
+        REQUIRE(b.z == 6.0f);
+    }
+}
+     
+TEST_CASE("Vec3 *= and /= operators at compile time", "[Vec3]") {
+    constexpr pv::Vec3 b(4.0f, 5.0f, 6.0f);
+
+    SECTION("Operator *="){
+        // The lambda runs during compilation; only its result needs to be constexpr
+        constexpr pv::Vec3 a = [b] {
+            pv::Vec3 v(1.0f, 2.0f, 3.0f);
+            v *= b;
+            return v;
+        }();
+
+        STATIC_REQUIRE(a.x == 4.0f);
+        STATIC_REQUIRE(a.y == 10.0f);
+        STATIC_REQUIRE(a.z == 18.0f);
+    }
+
+    SECTION("Operator /="){
+        constexpr pv::Vec3 a = [b] {
+            pv::Vec3 v(1.0f, 2.0f, 3.0f);
+            v /= b;
+            return v;
+        }();
+
+        STATIC_REQUIRE(a.x == 0.25f);
+        STATIC_REQUIRE(a.y == 0.4f);
+        STATIC_REQUIRE(a.z == 0.5f);
+    }
+}
+
 TEST_CASE("Vec3 is trivially copyable and tightly packed", "[Vec3]") {
     SECTION("Trivially copyable") {
         // Trivially copyable means the compiler is allowed to move a Vec3 around
@@ -359,3 +421,5 @@ TEST_CASE("Vec3 is trivially copyable and tightly packed", "[Vec3]") {
         STATIC_REQUIRE(sizeof(pv::Vec3[8]) == 8 * sizeof(pv::Vec3));
     }
 }
+
+

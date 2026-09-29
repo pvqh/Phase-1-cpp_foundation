@@ -58,10 +58,6 @@ namespace pv{
             return (x == other.x && y == other.y && z == other.z);
         }
 
-        [[nodiscard]] constexpr bool operator!=(const Vec3& other) const {
-            return !(*this == other);
-        }
-
         [[nodiscard]] float length() const {
             return std::sqrt(lengthSquared());
         }
@@ -70,7 +66,7 @@ namespace pv{
             return (x*x + y*y + z*z);
         }
 
-        [[nosdiscard]] Vec3 normalized() const {
+        [[nodiscard]] Vec3 normalized() const {
             float length = this->length();
             if (length == 0.0f){
                 return Vec3(0.0f, 0.0f, 0.0f);
@@ -134,7 +130,7 @@ namespace pv{
         return a;
     }
 
-    [[nosdiscard]] constexpr float dot(const Vec3& a, const Vec3& b) {
+    [[nodiscard]] constexpr float dot(const Vec3& a, const Vec3& b) {
         return (a.x*b.x + a.y*b.y + a.z*b.z);
     }
 
