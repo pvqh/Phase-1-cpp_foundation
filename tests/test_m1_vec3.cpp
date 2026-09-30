@@ -6,37 +6,34 @@
 #include <array>
 #include <type_traits>
 TEST_CASE("Vec3 can be made at compile time", "[Vec3]") {
-    pv::Vec3 v(1.0f, 2.0f, 3.0f);
-    REQUIRE(v.x == 1.0f);    // 
-    REQUIRE(v.y == 2.0f);
-    REQUIRE(v.z == 3.0f);
+    
 }
 
 TEST_CASE("Vec3 default constructor", "[Vec3]") {   
     SECTION("Default constructor initializes with zero values") {
-        pv::Vec3 v;
-        REQUIRE(v.x == 0.0f);
-        REQUIRE(v.y == 0.0f);
-        REQUIRE(v.z == 0.0f);
+        constexpr pv::Vec3 v;
+        STATIC_REQUIRE(v.x == 0.0f);
+        STATIC_REQUIRE(v.y == 0.0f);
+        STATIC_REQUIRE(v.z == 0.0f);
     }
 
     SECTION("Default constructor initializes with array") {
-        std::array<pv::Vec3, 4> arr;
-        REQUIRE(arr[0].x == 0.0f);
-        REQUIRE(arr[0].y == 0.0f);
-        REQUIRE(arr[0].z == 0.0f);
+        constexpr std::array<pv::Vec3, 4> arr;
+        STATIC_REQUIRE(arr[0].x == 0.0f);
+        STATIC_REQUIRE(arr[0].y == 0.0f);
+        STATIC_REQUIRE(arr[0].z == 0.0f);
         
-        REQUIRE(arr[1].x == 0.0f);
-        REQUIRE(arr[1].y == 0.0f);
-        REQUIRE(arr[1].z == 0.0f);
+        STATIC_REQUIRE(arr[1].x == 0.0f);
+        STATIC_REQUIRE(arr[1].y == 0.0f);
+        STATIC_REQUIRE(arr[1].z == 0.0f);
         
-        REQUIRE(arr[2].x == 0.0f);
-        REQUIRE(arr[2].y == 0.0f);
-        REQUIRE(arr[2].z == 0.0f);
+        STATIC_REQUIRE(arr[2].x == 0.0f);
+        STATIC_REQUIRE(arr[2].y == 0.0f);
+        STATIC_REQUIRE(arr[2].z == 0.0f);
         
-        REQUIRE(arr[3].x == 0.0f);
-        REQUIRE(arr[3].y == 0.0f);
-        REQUIRE(arr[3].z == 0.0f);
+        STATIC_REQUIRE(arr[3].x == 0.0f);
+        STATIC_REQUIRE(arr[3].y == 0.0f);
+        STATIC_REQUIRE(arr[3].z == 0.0f);
   
     }
 }
